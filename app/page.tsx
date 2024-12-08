@@ -1,63 +1,79 @@
-"use client";
+'use client'
 
-import { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
-import * as z from 'zod';
-import { Atom, ArrowRight, CheckCircle2, XCircle, ExternalLink } from 'lucide-react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card } from '@/components/ui/card';
+import { useState } from 'react'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import * as z from 'zod'
+import { Atom, ArrowRight, CheckCircle2, ExternalLink } from 'lucide-react'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { Card } from '@/components/ui/card'
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog";
-import { toast } from 'sonner';
-import { validateCode, markCodeAsUsed } from '@/lib/validation';
-import { sendTokens, validateAddress } from '@/lib/cosmos';
+} from '@/components/ui/dialog'
+import { toast } from 'sonner'
+import { validateCode, markCodeAsUsed } from '@/lib/validation'
+import { sendTokens, validateAddress } from '@/lib/cosmos'
 
 const formSchema = z.object({
-  code: z.string().length(7, "Code must be exactly 7 characters"),
-  address: z.string().min(1, "Address is required"),
-});
+  code: z.string().length(7, 'Code must be exactly 7 characters'),
+  address: z
+    .string()
+    .min(1, 'Address is required')
+    .regex(/^neutron[a-zA-Z0-9]{39}$/, 'Invalid Neutron address format'),
+})
 
 export default function Home() {
-  const [isLoading, setIsLoading] = useState(false);
-  const [txHash, setTxHash] = useState<string | null>(null);
-  const [showSuccessDialog, setShowSuccessDialog] = useState(false);
+  const [isLoading, setIsLoading] = useState(false)
+  const [txHash, setTxHash] = useState<string | null>(null)
+  const [showSuccessDialog, setShowSuccessDialog] = useState(false)
 
-  const { register, handleSubmit, formState: { errors }, reset } = useForm({
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm({
     resolver: zodResolver(formSchema),
-  });
+  })
 
   const onSubmit = async (data: any) => {
     try {
-      setIsLoading(true);
-      
-      if (!validateCode(data.code)) {
-        toast.error("Invalid or already used code");
-        return;
-      }
+      setIsLoading(true)
 
-      if (!await validateAddress(data.address)) {
-        toast.error("Invalid Neutron address");
-        return;
-      }
+      // const isValidCode = validateCode(data.code)
+      // if (!isValidCode) {
+      //   toast.error('Invalid or already used code')
+      //   return
+      // }
 
-      const hash = await sendTokens(data.address);
-      setTxHash(hash);
-      markCodeAsUsed(data.code);
-      setShowSuccessDialog(true);
-      toast.success("Tokens sent successfully!");
-      reset();
+      // if (!(await validateAddress(data.address))) {
+      //   toast.error('Invalid Neutron address or address not found on chain')
+      //   return
+      // }
+
+      const hash = await sendTokens(data.address)
+      if (hash) {
+        // await markCodeAsUsed(data.code)
+        setTxHash(hash)
+        setShowSuccessDialog(true)
+        toast.success('Tokens sent successfully!')
+        reset()
+      }
     } catch (error) {
-      toast.error("Transaction failed. Please try again.");
+      console.error('Transaction error:', error)
+      toast.error(
+        error instanceof Error
+          ? error.message
+          : 'Transaction failed. Please try again.'
+      )
     } finally {
-      setIsLoading(false);
+      setIsLoading(false)
     }
-  };
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-neutral-900 to-neutral-950">
@@ -67,7 +83,7 @@ export default function Home() {
             <Atom className="w-12 h-12 text-purple-500" />
             <h1 className="text-4xl font-bold text-white">Neutron Faucet</h1>
           </div>
-          
+
           <Card className="w-full max-w-md p-6 bg-neutral-800 border-neutral-700">
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
               <div className="space-y-2">
@@ -75,12 +91,14 @@ export default function Home() {
                   Redemption Code
                 </label>
                 <Input
-                  {...register("code")}
+                  {...register('code')}
                   className="bg-neutral-900 border-neutral-700 text-white"
                   placeholder="Enter your 7-digit code"
                 />
                 {errors.code && (
-                  <p className="text-red-500 text-sm">{errors.code.message?.toString()}</p>
+                  <p className="text-red-500 text-sm">
+                    {errors.code.message?.toString()}
+                  </p>
                 )}
               </div>
 
@@ -89,12 +107,14 @@ export default function Home() {
                   Neutron Address
                 </label>
                 <Input
-                  {...register("address")}
+                  {...register('address')}
                   className="bg-neutral-900 border-neutral-700 text-white"
                   placeholder="neutron..."
                 />
                 {errors.address && (
-                  <p className="text-red-500 text-sm">{errors.address.message?.toString()}</p>
+                  <p className="text-red-500 text-sm">
+                    {errors.address.message?.toString()}
+                  </p>
                 )}
               </div>
 
@@ -104,7 +124,7 @@ export default function Home() {
                 disabled={isLoading}
               >
                 {isLoading ? (
-                  "Processing..."
+                  'Processing...'
                 ) : (
                   <>
                     Redeem Tokens
@@ -120,9 +140,9 @@ export default function Home() {
               Welcome to the Neutron Ecosystem
             </h2>
             <p className="text-neutral-400">
-              Get started with 0.01 NTRN testnet tokens by redeeming your code. 
-              These tokens will help you explore and interact with the Neutron 
-              network's features and applications.
+              Get started with 0.01 NTRN testnet tokens by redeeming your code.
+              These tokens will help you explore and interact with the Neutron
+              network&tilde;s features and applications.
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-4 mt-4">
               <div className="flex items-center space-x-2">
@@ -152,7 +172,8 @@ export default function Home() {
           </DialogHeader>
           <div className="space-y-4">
             <p className="text-neutral-300">
-              Your tokens have been sent successfully! You can view the transaction details below.
+              Your tokens have been sent successfully! You can view the
+              transaction details below.
             </p>
             <div className="bg-neutral-900 p-4 rounded-lg">
               <p className="text-sm text-neutral-300 mb-2">Transaction Hash:</p>
@@ -176,5 +197,5 @@ export default function Home() {
         </DialogContent>
       </Dialog>
     </div>
-  );
+  )
 }

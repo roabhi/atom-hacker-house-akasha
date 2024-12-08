@@ -81,19 +81,19 @@ export default function Home() {
         <div className="flex flex-col items-center justify-center space-y-8">
           <div className="flex items-center space-x-3">
             <Atom className="w-12 h-12 text-purple-500" />
-            <h1 className="text-4xl font-bold text-white">Neutron Faucet</h1>
+            <h1 className="text-4xl font-bold text-white">CosmosQuest</h1>
           </div>
 
           <Card className="w-full max-w-md p-6 bg-neutral-800 border-neutral-700">
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
               <div className="space-y-2">
                 <label className="text-sm font-medium text-neutral-200">
-                  Redemption Code
+                  Secret Code
                 </label>
                 <Input
                   {...register('code')}
                   className="bg-neutral-900 border-neutral-700 text-white"
-                  placeholder="Enter your 7-digit code"
+                  placeholder="Enter your code"
                 />
                 {errors.code && (
                   <p className="text-red-500 text-sm">
@@ -127,7 +127,7 @@ export default function Home() {
                   'Processing...'
                 ) : (
                   <>
-                    Redeem Tokens
+                    Claim reward
                     <ArrowRight className="ml-2 h-4 w-4" />
                   </>
                 )}
@@ -135,7 +135,7 @@ export default function Home() {
             </form>
           </Card>
 
-          <div className="max-w-2xl text-center space-y-4">
+          {/* <div className="max-w-2xl text-center space-y-4">
             <h2 className="text-2xl font-semibold text-white">
               Welcome to the Neutron Ecosystem
             </h2>
@@ -158,7 +158,7 @@ export default function Home() {
                 <span className="text-neutral-300">Easy to Use</span>
               </div>
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
 
@@ -167,13 +167,12 @@ export default function Home() {
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <CheckCircle2 className="text-green-500 w-6 h-6" />
-              Transaction Successful!
+              Congrats!
             </DialogTitle>
           </DialogHeader>
           <div className="space-y-4">
             <p className="text-neutral-300">
-              Your tokens have been sent successfully! You can view the
-              transaction details below.
+              The secret code is correct. You should receive 0.01 NTRN shortly.
             </p>
             <div className="bg-neutral-900 p-4 rounded-lg">
               <p className="text-sm text-neutral-300 mb-2">Transaction Hash:</p>
